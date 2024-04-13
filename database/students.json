@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "student_code": "20204567"
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "student_code": "20207890"
+    },
+    {
+        "id": 3,
+        "name": "Alice Johnson",
+        "student_code": "20201234"
+    },
+    {
+        "id": 4,
+        "name": "Bob Williams",
+        "student_code": "20205678"
+    },
+    {
+        "id": 5,
+        "name": "Charlie Brown",
+        "student_code": "20208901"
+    },
+    {
+        "id": 6,
+        "name": "Emily Davis",
+        "student_code": "20212345"
+    },
+    {
+        "id": 7,
+        "name": "Frank Miller",
+        "student_code": "20216789"
+    },
+    {
+        "id": 8,
+        "name": "Grace Wilson",
+        "student_code": "20219012"
+    },
+    {
+        "id": 9,
+        "name": "Harry Moore",
+        "student_code": "20213456"
+    },
+    {
+        "id": 10,
+        "name": "Ivy Taylor",
+        "student_code": "20217890"
+    }
+]
