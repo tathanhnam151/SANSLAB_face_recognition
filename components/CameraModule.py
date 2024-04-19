@@ -2,7 +2,7 @@ import cv2
 import datetime, time, os
 
 from tools.jsonconverter import get_student_info
-from tools.recognition import recognition, detector
+from tools.recognition import recognition, recognition_faiss, detector
 from face_alignment.alignment import norm_crop
 
 class Camera:
@@ -31,6 +31,8 @@ class Camera:
         return False, None
 
     def get_frame_recognition(self):
+        start_time = time.time()
+
         if self.camera is not None:
             ret, img = self.camera.read()
             if ret:
@@ -43,7 +45,9 @@ class Camera:
                     for i in range(len(bboxes)):
                         face_image = img[bboxes[i][1]:bboxes[i][3], bboxes[i][0]:bboxes[i][2]]
                         face_align = norm_crop(img, landmarks[i])  
-                        score, student_code = recognition(face_image=face_align)
+                        # score, student_code = recognition(face_image=face_align)
+                        score, student_code = recognition_faiss(face_image=face_align)
+                        print(score, student_code)
                         if student_code is not None and score >= 0.40:
                             # Convert the student code to the student's name
                             student_info = get_student_info(json_file = "database/students.json", search_param=student_code)
@@ -63,9 +67,17 @@ class Camera:
                 # Check for attendance
                 self.check_for_attendance(recognized_names)
 
+                # Calculate FPS
+                fps = 1.0 / (time.time() - start_time)
+                fps_text = f"FPS: {fps:.2f}"
+
+                # Draw FPS on the image
+                cv2.putText(img, fps_text, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)                
+
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = cv2.resize(img, (640, 480))  # Resize the image
                 return True, img, recognition_results
+            
         return False, None, []
 
     def check_for_attendance(self, recognized_names):

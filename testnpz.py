@@ -27,6 +27,32 @@ def modify_npz_contents(npz_file):
     # Save the modified data back to the .npz file
     np.savez(npz_file, **modified_data)
 
+def empty_npz(npz_file):
+    data = np.load(npz_file)
+    modified_data = {}
+
+    for key in data.files:
+        # Create an empty array with the same shape as the original data
+        values = np.empty(shape=(0,) + data[key].shape[1:])
+
+        modified_data[key] = values
+
+    # Save the modified data back to the .npz file
+    np.savez(npz_file, **modified_data)
+
+def generate_data_npz(npz_file, num_people=70, num_photos_per_person=3):
+    # Generate unique image names for each person
+    image_names = np.repeat([f'2020{4500 + i}' for i in range(num_people)], num_photos_per_person)
+
+    # Generate random embeddings for each photo
+    # Assuming each embedding is a 128-dimensional vector
+    image_embs = np.random.rand(num_people * num_photos_per_person, 512)
+
+    # Save the data to the .npz file
+    np.savez(npz_file, images_name=image_names, images_emb=image_embs)
+
 if __name__ == "__main__":
     modify_npz_contents("database/photo_datasets/face_features/feature.npz")
+    generate_data_npz("database/photo_datasets/face_features/feature.npz")
+    # empty_npz("database/photo_datasets/face_features/feature.npz")
     print_npz_contents("database/photo_datasets/face_features/feature.npz")

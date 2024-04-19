@@ -86,6 +86,62 @@ def recognition(face_image):
 
     return score, name
 
+import faiss
+
+def recognition_faiss(face_image):
+    """
+    Recognize a face image.
+
+    Args:
+        face_image: The input face image.
+
+    Returns:
+        tuple: A tuple containing the recognition score and name.
+    """
+
+    # Reread precomputed face features and names
+    images_names, images_embs = read_features(feature_path="database/photo_datasets/face_features/feature")
+    
+    # Check if face_image is not empty
+    if face_image.size == 0:
+        return None, None
+
+    # Get feature from face
+    query_emb = get_feature(face_image).reshape(1, -1)
+
+    # Check if the dimensions match
+    assert query_emb.shape[1] == images_embs.shape[1], "Dimension mismatch"
+
+
+    # Convert to float32
+    query_emb = query_emb.astype('float32')
+    images_embs = images_embs.astype('float32')
+
+    # Normalize the embeddings to have L2 norm = 1
+    faiss.normalize_L2(query_emb)
+    faiss.normalize_L2(images_embs)
+
+    # Build the FAISS index
+    index = faiss.IndexFlatL2(images_embs.shape[1])
+    index.add(images_embs)
+
+    # Perform the search
+    D, I = index.search(query_emb, 1)
+
+    # Get the ID of the closest image
+    id_min = I[0][0]
+
+    # Get the name of the closest image
+    name = images_names[id_min]
+
+    # Get the score of the closest image
+    score = D[0][0]
+
+    # Convert the score to cosine similarity
+    cosine_similarity = 1 - score / 2
+
+    return cosine_similarity, name
+
 def start_face_detection_and_recognition():
     """Start face detection and recognition."""
     cap = cv2.VideoCapture(1)
