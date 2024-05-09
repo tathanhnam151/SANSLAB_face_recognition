@@ -5,6 +5,8 @@ from tools.jsonconverter import get_student_info
 from tools.recognition import recognition, recognition_faiss, detector
 from face_alignment.alignment import norm_crop
 
+rtsp_url = "rtsp://admin:sanslab1@192.168.1.64:554/Streaming/Channels/101"
+
 class Camera:
     def __init__(self):
         self.camera = None
@@ -12,7 +14,8 @@ class Camera:
         self.attendance = []
 
     def start(self):
-        self.camera = cv2.VideoCapture(1)
+        self.camera = cv2.VideoCapture(rtsp_url)
+        # self.camera = cv2.VideoCapture(1)
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -53,7 +56,7 @@ class Camera:
                             student_info = get_student_info(json_file = "database/students.json", search_param=student_code)
                             if student_info:
                                 name, _ = student_info
-                                recognized_names.append(name)
+                                recognized_names.append(student_code)
                             else:
                                 name = "UNKNOWN"
                             caption = f"{name}:{score:.2f}"

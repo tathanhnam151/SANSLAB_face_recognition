@@ -51,8 +51,28 @@ def generate_data_npz(npz_file, num_people=70, num_photos_per_person=3):
     # Save the data to the .npz file
     np.savez(npz_file, images_name=image_names, images_emb=image_embs)
 
+def change_index(npz_file):
+    data = np.load(npz_file)
+    modified_data = {}
+
+    for key in data.files:
+        values = data[key]
+
+        if key == 'images_name':
+            # Find the indices where 'images_name' is '20217890'
+            indices = np.where(values == '20217890')
+
+            # Replace '20217890' with '20200424'
+            values[indices] = '20200424'
+
+        modified_data[key] = values
+
+    # Save the modified data back to the .npz file
+    np.savez(npz_file, **modified_data)
+
 if __name__ == "__main__":
-    modify_npz_contents("database/photo_datasets/face_features/feature.npz")
-    generate_data_npz("database/photo_datasets/face_features/feature.npz")
+    # modify_npz_contents("database/photo_datasets/face_features/feature.npz")
+    # generate_data_npz("database/photo_datasets/face_features/feature.npz")
     # empty_npz("database/photo_datasets/face_features/feature.npz")
+    change_index("database/photo_datasets/face_features/feature.npz")
     print_npz_contents("database/photo_datasets/face_features/feature.npz")
