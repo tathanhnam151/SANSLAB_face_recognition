@@ -46,6 +46,9 @@ def npz_to_json_no_gap(npz_file, json_file):
     image_names = data['images_name']
     face_features = data['images_emb']
 
+    print(f"Image names: {image_names}")  # print the image names
+    print(f"Face features: {face_features}")  # print the face features
+
     # Initialize an empty list to hold the data
     data_list = []
 
@@ -60,8 +63,12 @@ def npz_to_json_no_gap(npz_file, json_file):
         # Add the dictionary to the list
         data_list.append(image_dict)
 
+    print(f"Data list: {data_list}")  # print the data list
+
     # Convert the list to a JSON string without indentation
     encoded_numpy_data = json.dumps(data_list, cls=NumpyArrayEncoder)
+
+    print(f"Encoded numpy data: {encoded_numpy_data}")  # print the encoded numpy data
 
     # Write the JSON string to a file
     with open(json_file, 'w') as f:

@@ -4,7 +4,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, QTimer
 from datetime import datetime
 
-from components.AppScriptModule import record_student_attend, feature_backup
+from components.AppScriptModule import *
 from components.CameraModule import Camera
 from components.FaceRegistrationDialog import FaceRegistrationDialog
 
@@ -39,6 +39,16 @@ class MainWindow(QMainWindow):
         # Initialize the message box
         self.msg_box = None
 
+        # Perform feature backup
+        # feature_backup()
+        
+        # Get all student information and store in a dictionary
+        get_student_info()
+        # Copy student information to the original file
+        rename_file()
+        transform_json_format()
+
+
     def update_camera_frame(self):
         ret, frame, recognized_faces = self.camera.get_frame_recognition()
         if ret:
@@ -50,7 +60,6 @@ class MainWindow(QMainWindow):
             for (name, time) in list(self.camera.attendance):  # Make a copy of the list for iteration
                 # Record attendance for the student
                 print(name, time)
-                feature_backup()
                 record_student_attend(name)
 
                 if self.msg_box is None:

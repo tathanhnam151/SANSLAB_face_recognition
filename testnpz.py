@@ -27,6 +27,25 @@ def modify_npz_contents(npz_file):
     # Save the modified data back to the .npz file
     np.savez(npz_file, **modified_data)
 
+
+def modify_npz_only_20200424(npz_file):
+    data = np.load(npz_file)
+    modified_data = {}
+
+    # Get the indices where images_name is '20200424'
+    indices = data['images_name'] == '20200424'
+
+    for key in data.files:
+        values = data[key]
+
+        # Keep only the values where images_name is '20200424'
+        values = values[indices]
+
+        modified_data[key] = values
+
+    # Save the modified data back to the .npz file
+    np.savez(npz_file, **modified_data)
+
 def empty_npz(npz_file):
     data = np.load(npz_file)
     modified_data = {}
@@ -40,9 +59,9 @@ def empty_npz(npz_file):
     # Save the modified data back to the .npz file
     np.savez(npz_file, **modified_data)
 
-def generate_data_npz(npz_file, num_people=70, num_photos_per_person=3):
+def generate_data_npz(npz_file, num_people=1, num_photos_per_person=3):
     # Generate unique image names for each person
-    image_names = np.repeat([f'2020{4500 + i}' for i in range(num_people)], num_photos_per_person)
+    image_names = np.repeat([f'0000{4500 + i}' for i in range(num_people)], num_photos_per_person)
 
     # Generate random embeddings for each photo
     # Assuming each embedding is a 128-dimensional vector
@@ -71,8 +90,6 @@ def change_index(npz_file):
     np.savez(npz_file, **modified_data)
 
 if __name__ == "__main__":
-    # modify_npz_contents("database/photo_datasets/face_features/feature.npz")
-    # generate_data_npz("database/photo_datasets/face_features/feature.npz")
-    # empty_npz("database/photo_datasets/face_features/feature.npz")
-    change_index("database/photo_datasets/face_features/feature.npz")
+    print_npz_contents("database/photo_datasets/face_features/feature.npz")
+    modify_npz_only_20200424("database/photo_datasets/face_features/feature.npz")
     print_npz_contents("database/photo_datasets/face_features/feature.npz")

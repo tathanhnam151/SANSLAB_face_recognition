@@ -1,9 +1,13 @@
 import cv2
 import datetime, time, os
 
+import numpy as np
+
 from tools.jsonconverter import get_student_info
 from tools.recognition import recognition, recognition_faiss, detector
 from face_alignment.alignment import norm_crop
+from PIL import ImageFont, ImageDraw, Image
+
 
 rtsp_url = "rtsp://admin:sanslab1@192.168.1.64:554/Streaming/Channels/101"
 
@@ -14,8 +18,8 @@ class Camera:
         self.attendance = []
 
     def start(self):
-        self.camera = cv2.VideoCapture(rtsp_url)
-        # self.camera = cv2.VideoCapture(1)
+        # self.camera = cv2.VideoCapture(rtsp_url)
+        self.camera = cv2.VideoCapture(1)
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -63,24 +67,39 @@ class Camera:
                         else:
                             caption = "Unknown"
                             name = "Unknown"
+
+                        # Convert the image to a PIL Image
+                        img_pil = Image.fromarray(img)
+                        draw = ImageDraw.Draw(img_pil)
+
+                        # Specify the font and size
+                        font = ImageFont.truetype('Arial Unicode.ttf', 30)
+
+                        # Draw the text on the image
+                        draw.text((bboxes[i][0], bboxes[i][1] - 10), caption, font=font, fill=(36,255,12,0))
+
+                        # Convert the PIL Image back to an OpenCV image
+                        img = np.array(img_pil)
+
+                        # Draw the bounding box on the image
                         cv2.rectangle(img, (bboxes[i][0], bboxes[i][1]), (bboxes[i][2], bboxes[i][3]), (0, 255, 0), 2)
-                        cv2.putText(img, caption, (bboxes[i][0], bboxes[i][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+
                         recognition_results.append((score, name))
 
-                # Check for attendance
-                self.check_for_attendance(recognized_names)
+                    # Check for attendance
+                    self.check_for_attendance(recognized_names)
 
-                # Calculate FPS
-                fps = 1.0 / (time.time() - start_time)
-                fps_text = f"FPS: {fps:.2f}"
+                    # Calculate FPS
+                    fps = 1.0 / (time.time() - start_time)
+                    fps_text = f"FPS: {fps:.2f}"
 
-                # Draw FPS on the image
-                cv2.putText(img, fps_text, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)                
+                    # Draw FPS on the image
+                    cv2.putText(img, fps_text, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)                
 
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                img = cv2.resize(img, (640, 480))  # Resize the image
-                return True, img, recognition_results
-            
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    img = cv2.resize(img, (640, 480))  # Resize the image
+                    return True, img, recognition_results
+
         return False, None, []
 
     def check_for_attendance(self, recognized_names):
