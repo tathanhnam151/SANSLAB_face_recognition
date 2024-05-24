@@ -157,3 +157,40 @@ def transform_json_format():
     with open(filepath, 'w', encoding='utf8') as f:
         json.dump(transformed_data, f, ensure_ascii=False, indent=4)
 
+def get_student_feature(feature):
+    # Use the url defined at the top of the script
+    global url
+    file_path = f"database/photo_datasets/face_features/downloaded_feature.json"
+
+    # Define the parameters
+    params = {
+        "feature": feature
+    }
+
+    # Send the GET request
+    response = requests.get(url, params=params)
+
+    # Check the status code of the response
+    if response.status_code == 200:
+        # If the request was successful, save the JSON data to a file
+        feature_data = response.json()
+        try:
+            with open(file_path, 'w') as f:
+                json.dump(feature_data, f)
+        except Exception as e:
+            print(f"Error while writing to file: {e}")  # Print any exceptions while writing to file
+        return feature_data
+    else:
+        # If the request was not successful, print an error message and return None
+        print(f"Error: Received status code {response.status_code}")
+        return None
+    
+def format_json_file(file_path):
+    # Read the JSON data from the file
+    with open(file_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    # Write the JSON data back to the file with indentation
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4)
+

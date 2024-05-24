@@ -3,7 +3,7 @@ import json
 def get_student_info(json_file, search_param):
     try:
         # Load the JSON data from a file
-        with open(json_file, 'r') as f:
+        with open(json_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"Error loading JSON data: {e}")

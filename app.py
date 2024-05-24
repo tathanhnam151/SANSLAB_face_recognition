@@ -41,6 +41,10 @@ class MainWindow(QMainWindow):
 
         # Perform feature backup
         # feature_backup()
+
+        # Get all student features from Google AppScript
+        get_student_feature("20200424")
+        format_json_file("database/photo_datasets/face_features/downloaded_feature.json")
         
         # Get all student information and store in a dictionary
         get_student_info()

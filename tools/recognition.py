@@ -18,8 +18,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 detector = SCRFD(model_file="./face_detection/scrfd/weights/scrfd_2.5g_bnkps.onnx")
 
 # Face recognizer
+
+# recognizer = iresnet_inference(
+#     model_name="r34", path="./face_recognition/arcface/weights/arcface_r34.pth", device=device
+# )
+
 recognizer = iresnet_inference(
-    model_name="r34", path="./face_recognition/arcface/weights/arcface_r34.pth", device=device
+    model_name="r18", path="./face_recognition/arcface/weights/arcface_r18.pth", device=device
 )
 
 # Load precomputed face features and names
@@ -227,6 +232,7 @@ def register_face(new_person_dir, person_name):
 
         # Compare with stored encodings
         score, id_min = compare_encodings(query_emb, images_emb)
+        print("Score:", score)
         name = images_name[id_min]
         score = score[0]
 
@@ -235,11 +241,12 @@ def register_face(new_person_dir, person_name):
             score_counter += 1
 
     # If the score counter was above 0.4, the registration was successful
-    if score_counter > 0.4:
+    if score_counter >= 1:
         print("Registration successful!")
         return True
     else:
         print("Registration failed. Please try again.")
+        print("Score counter:", score_counter)
         return False
 
 if __name__ == "__main__":

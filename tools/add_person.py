@@ -18,8 +18,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 detector = SCRFD(model_file="./face_detection/scrfd/weights/scrfd_2.5g_bnkps.onnx")
 
 # Face recognizer
+# recognizer = iresnet_inference(
+#     model_name="r34", path="./face_recognition/arcface/weights/arcface_r34.pth", device=device
+# )
+
 recognizer = iresnet_inference(
-    model_name="r34", path="./face_recognition/arcface/weights/arcface_r34.pth", device=device
+    model_name="r18", path="./face_recognition/arcface/weights/arcface_r18.pth", device=device
 )
 
 NEW_PERSON_DIR = "./database/temp/"

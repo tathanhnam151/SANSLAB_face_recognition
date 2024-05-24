@@ -14,8 +14,22 @@ def read_features(feature_path):
     return images_name, images_emb
 
 
+# def compare_encodings(encoding, encodings):
+#     sims = np.dot(encodings, encoding.T)
+#     pare_index = np.argmax(sims)
+#     score = sims[pare_index]
+#     return score, pare_index
+
 def compare_encodings(encoding, encodings):
+    # Normalize the encodings
+    encoding = encoding / np.linalg.norm(encoding)
+    encodings = encodings / np.linalg.norm(encodings, axis=1, keepdims=True)
+    
+    # Calculate the similarity scores
     sims = np.dot(encodings, encoding.T)
+    
+    # Find the encoding with the highest similarity score
     pare_index = np.argmax(sims)
     score = sims[pare_index]
+    
     return score, pare_index
