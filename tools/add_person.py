@@ -23,7 +23,7 @@ detector = SCRFD(model_file="./face_detection/scrfd/weights/scrfd_2.5g_bnkps.onn
 # )
 
 recognizer = iresnet_inference(
-    model_name="r18", path="./face_recognition/arcface/weights/arcface_r18.pth", device=device
+    model_name="r34", path="./face_recognition/arcface/weights/arcface_r34.pth", device=device
 )
 
 NEW_PERSON_DIR = "./database/temp/"

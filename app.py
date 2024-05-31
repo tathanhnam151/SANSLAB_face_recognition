@@ -1,4 +1,4 @@
-import sys
+import sys, webbrowser
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, QTimer
@@ -20,10 +20,14 @@ class MainWindow(QMainWindow):
         
         self.face_registration_button = QPushButton("Face Registration")
         self.face_registration_button.clicked.connect(self.show_face_registration_dialog) 
+
+        self.open_url_button = QPushButton("Attendance Sheet")
+        self.open_url_button.clicked.connect(self.open_url)
         
         layout = QVBoxLayout()
         layout.addWidget(self.camera_label)
         layout.addWidget(self.face_registration_button)
+        layout.addWidget(self.open_url_button)
         
         central_widget = QWidget()
         central_widget.setLayout(layout)
@@ -39,18 +43,23 @@ class MainWindow(QMainWindow):
         # Initialize the message box
         self.msg_box = None
 
+        # Check for update before performing feature backup
+        check_for_updates()
+
+
         # Perform feature backup
         # feature_backup()
 
         # Get all student features from Google AppScript
-        get_student_feature("20200424")
-        format_json_file("database/photo_datasets/face_features/downloaded_feature.json")
+        # get_student_feature("20200424")
+        # format_json_file("database/photo_datasets/face_features/downloaded_feature.json")
         
         # Get all student information and store in a dictionary
-        get_student_info()
+        # get_student_info()
         # Copy student information to the original file
-        rename_file()
-        transform_json_format()
+        # rename_file()
+        # transform_json_format()
+
 
 
     def update_camera_frame(self):
@@ -101,6 +110,15 @@ class MainWindow(QMainWindow):
         self.camera.start()
         print("Camera is ready for use.")
 
+    def open_url(self):
+        with open('config.json', 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        url = config.get('AppScript_url')
+        if url is not None:
+            webbrowser.open(url)
+        else:
+            QMessageBox.warning(self, "Warning", "No URL specified in the configuration file.")
+
 class NonBlockingMessageBox(QMessageBox):
     def __init__(self, title, text, parent=None):
         super().__init__(parent)
@@ -117,6 +135,14 @@ class NonBlockingMessageBox(QMessageBox):
 
     def reset_timer(self):
         self.timer.start(5000)  # Reset the timer
+
+    def open_url(self):
+        url = self.camera.config.get('AppScript_url')
+        if url is not None:
+            webbrowser.open(url)
+        else:
+            QMessageBox.warning(self, "Warning", "No URL specified in the configuration file.")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

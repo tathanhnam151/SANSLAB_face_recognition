@@ -1,5 +1,4 @@
-import cv2
-import datetime, time, os
+import datetime, time, os, json, cv2
 
 import numpy as np
 
@@ -12,14 +11,26 @@ from PIL import ImageFont, ImageDraw, Image
 rtsp_url = "rtsp://admin:sanslab1@192.168.1.64:554/Streaming/Channels/101"
 
 class Camera:
-    def __init__(self):
+    def __init__(self, config_file='config.json'):
         self.camera = None
         self.recognition_start_times = {}
         self.attendance = []
 
+        # Load the configuration file
+        with open(config_file, 'r', encoding='utf-8') as f:
+            self.config = json.load(f)
+
     def start(self):
-        # self.camera = cv2.VideoCapture(rtsp_url)
-        self.camera = cv2.VideoCapture(1)
+        camera_option = self.config.get('camera-option', 0)
+        if isinstance(camera_option, int):
+            # Use the specified camera index
+            self.camera = cv2.VideoCapture(camera_option)
+        elif isinstance(camera_option, str):
+            # Use the specified RTSP URL
+            self.camera = cv2.VideoCapture(camera_option)
+        else:
+            raise ValueError(f"Invalid camera option: {camera_option}")
+
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 

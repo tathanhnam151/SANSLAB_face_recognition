@@ -1,7 +1,14 @@
 import requests, threading, json, os, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import numpy as np
 
-url = "https://script.google.com/macros/s/AKfycbycuCiYtzGzps2T2U6P9Xlj4Ns-xO4YfdFZ1MUtNe5IiqMEkf0xWTi72peq3yZf5Pk3/exec"
+# Load the configuration file for the URL and other settings
+# Load the configuration file
+with open('config.json', 'r', encoding='utf-8') as f:
+    config = json.load(f)
+
+# Now you can use the settings in your script
+url = config['http_url']
 
 # def feature_backup():
 #     def send_request(payload):
@@ -57,6 +64,9 @@ url = "https://script.google.com/macros/s/AKfycbycuCiYtzGzps2T2U6P9Xlj4Ns-xO4Yfd
 
 #     print("Feature backup completed")
 
+
+# Feature backup
+# This function sends the face features to the server for backup, probably would be called after face registration
 def feature_backup():
     def send_request(payload):
         headers = {'Content-Type': 'application/json'}
@@ -91,6 +101,7 @@ def feature_backup():
     
 # Mark student as attended (new version using POST request)
 
+# This function marks the student with the given student code as attended in Google Sheets
 def record_student_attend(mssv):
     def send_request(mssv):
         payload = {'check': mssv}
@@ -98,6 +109,9 @@ def record_student_attend(mssv):
         return response
     threading.Thread(target=send_request, args=(mssv,)).start()
 
+# Get student information from Google AppScript for face registration task
+# If the student hasn't been registered, new face features would be added to the database
+# If the student has been registered, the face features would be updated
 def get_student_info():
     # Specify the URL, file path, and file name
     url_with_param = f"{url}?getAllUser=allUser"
@@ -123,6 +137,9 @@ def get_student_info():
             json.dump(data, f, ensure_ascii=False, indent=4)
     else:
         print(f"GET request to {url_with_param} failed with status code {response.status_code}.")
+
+# Rename the file from all_students.json to students.json
+# This function is for updating the student information list for face registration task
 def rename_file():
     # Specify the file paths
     old_filepath = "database/students.json"
@@ -136,6 +153,7 @@ def rename_file():
     if os.path.exists(new_filepath):
         os.rename(new_filepath, old_filepath)
 
+# Transform the JSON format of the student information file
 def transform_json_format():
 
     filepath = "database/students.json"
@@ -156,6 +174,24 @@ def transform_json_format():
     # Write the transformed data back to the file
     with open(filepath, 'w', encoding='utf8') as f:
         json.dump(transformed_data, f, ensure_ascii=False, indent=4)
+
+def save_features_to_npz(features):
+    # Check if features is a list
+    if isinstance(features, list):
+        # Separate the image names and embeddings into two different lists
+        images_name = [str(feature['mssv']) for feature in features]
+        images_emb = [json.loads(feature['feature']) for feature in features]
+    else:
+        # If features is not a list, assume it's a dictionary
+        images_name = [str(features['mssv'])]
+        images_emb = [json.loads(features['feature'])]
+
+    # Convert the lists to numpy arrays
+    images_name = np.array(images_name)
+    images_emb = np.array(images_emb)
+
+    # Save the numpy arrays to a .npz file with their respective keys
+    np.savez_compressed('downloaded_face_features.npz', images_name=images_name, images_emb=images_emb)
 
 def get_student_feature(feature):
     # Use the url defined at the top of the script
@@ -179,6 +215,10 @@ def get_student_feature(feature):
                 json.dump(feature_data, f)
         except Exception as e:
             print(f"Error while writing to file: {e}")  # Print any exceptions while writing to file
+
+        # Save the features to a .npz file
+        save_features_to_npz(feature_data)
+
         return feature_data
     else:
         # If the request was not successful, print an error message and return None
@@ -193,4 +233,25 @@ def format_json_file(file_path):
     # Write the JSON data back to the file with indentation
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
+
+def check_for_updates():
+    def update():
+        while True:
+            print("\n")  # Print a blank line
+            print("Checking for database update ...")
+            print("\n")  # Print another blank line
+            time.sleep(5)  # Wait for 5 seconds
+
+    # Create a new thread that will run the update function
+    update_thread = threading.Thread(target=update)
+
+    # Make the thread a daemon thread
+    update_thread.daemon = True
+
+    # Start the new thread
+    update_thread.start()
+
+
+
+
 

@@ -19,16 +19,16 @@ detector = SCRFD(model_file="./face_detection/scrfd/weights/scrfd_2.5g_bnkps.onn
 
 # Face recognizer
 
-# recognizer = iresnet_inference(
-#     model_name="r34", path="./face_recognition/arcface/weights/arcface_r34.pth", device=device
-# )
-
 recognizer = iresnet_inference(
-    model_name="r18", path="./face_recognition/arcface/weights/arcface_r18.pth", device=device
+    model_name="r34", path="./face_recognition/arcface/weights/arcface_r34.pth", device=device
 )
 
-# Load precomputed face features and names
-images_names, images_embs = read_features(feature_path="database/photo_datasets/face_features/test_feature")
+# recognizer = iresnet_inference(
+#     model_name="r18", path="./face_recognition/arcface/weights/arcface_r18.pth", device=device
+# )
+
+# # Load precomputed face features and names
+# images_names, images_embs = read_features(feature_path="database/photo_datasets/face_features/test_feature")
 
 @torch.no_grad()
 def get_feature(face_image):
@@ -106,7 +106,7 @@ def recognition_faiss(face_image):
 
     # Reread precomputed face features and names
     images_names, images_embs = read_features(feature_path="database/photo_datasets/face_features/feature")
-    
+
     # Check if face_image is not empty
     if face_image.size == 0:
         return None, None

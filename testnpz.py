@@ -94,6 +94,7 @@ if __name__ == "__main__":
     # modify_npz_only_20200424("database/photo_datasets/face_features/feature.npz")
     # print_npz_contents("database/photo_datasets/face_features/feature.npz")
 
-    empty_npz("database/photo_datasets/face_features/feature.npz")
-    generate_data_npz("database/photo_datasets/face_features/feature.npz", num_people=1, num_photos_per_person=3)
+    # empty_npz("database/photo_datasets/face_features/feature.npz")
+    # generate_data_npz("database/photo_datasets/face_features/feature.npz", num_people=1, num_photos_per_person=3)
     print_npz_contents("database/photo_datasets/face_features/feature.npz")
+    print_npz_contents("downloaded_face_features.npz")
