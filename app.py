@@ -44,11 +44,11 @@ class MainWindow(QMainWindow):
         self.msg_box = None
 
         # Check for update before performing feature backup
-        check_for_updates()
+        # check_for_updates()
 
 
         # Perform feature backup
-        # feature_backup()
+        feature_backup()
 
         # Get all student features from Google AppScript
         # get_student_feature("20200424")

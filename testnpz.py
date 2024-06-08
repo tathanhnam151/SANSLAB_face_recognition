@@ -59,7 +59,7 @@ def empty_npz(npz_file):
     # Save the modified data back to the .npz file
     np.savez(npz_file, **modified_data)
 
-def generate_data_npz(npz_file, num_people=1, num_photos_per_person=3):
+def generate_data_npz(npz_file, num_people, num_photos_per_person=3):
     # Generate unique image names for each person
     image_names = np.repeat([f'0000{4500 + i}' for i in range(num_people)], num_photos_per_person)
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # modify_npz_only_20200424("database/photo_datasets/face_features/feature.npz")
     # print_npz_contents("database/photo_datasets/face_features/feature.npz")
 
-    # empty_npz("database/photo_datasets/face_features/feature.npz")
-    # generate_data_npz("database/photo_datasets/face_features/feature.npz", num_people=1, num_photos_per_person=3)
+    empty_npz("database/photo_datasets/face_features/feature.npz")
+    generate_data_npz("database/photo_datasets/face_features/feature.npz", num_people=70, num_photos_per_person=3)
     print_npz_contents("database/photo_datasets/face_features/feature.npz")
     print_npz_contents("downloaded_face_features.npz")

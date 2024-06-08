@@ -1,6 +1,7 @@
 import requests, threading, json, os, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import numpy as np
+from itertools import groupby
 
 # Load the configuration file for the URL and other settings
 # Load the configuration file
@@ -66,7 +67,33 @@ url = config['http_url']
 
 
 # Feature backup
+
+# First version sending each item as a separate request
 # This function sends the face features to the server for backup, probably would be called after face registration
+# def feature_backup():
+#     def send_request(payload):
+#         headers = {'Content-Type': 'application/json'}
+#         response = requests.post(url, data=json.dumps(payload), headers=headers)
+#         print("Status code:", response.status_code)
+#         return response
+
+#     # Load the JSON data from a file
+#     with open('database/photo_datasets/face_features/feature.json') as f:
+#         data = json.load(f)
+
+#     for item in data:
+#         # Prepare the payload
+#         payload = {
+#             "mssv": item['mssv'],  # replace 'mssv' with the actual key in your JSON data
+#             "face_feature": str(item['face_feature'])  # convert the face_feature array to a string
+#         }
+
+#         # Send the payload and wait for the request to complete
+#         send_request(payload)
+
+#     print("Feature backup completed")
+
+# Second version sending all items in a single request
 def feature_backup():
     def send_request(payload):
         headers = {'Content-Type': 'application/json'}
@@ -78,15 +105,28 @@ def feature_backup():
     with open('database/photo_datasets/face_features/feature.json') as f:
         data = json.load(f)
 
-    for item in data:
-        # Prepare the payload
-        payload = {
-            "mssv": item['mssv'],  # replace 'mssv' with the actual key in your JSON data
-            "face_feature": str(item['face_feature'])  # convert the face_feature array to a string
-        }
+    # Sort data by 'mssv' and group by 'mssv'
+    data.sort(key=lambda x: x['mssv'])
+    groups = groupby(data, key=lambda x: x['mssv'])
 
-        # Send the payload and wait for the request to complete
-        send_request(payload)
+    for mssv, group in groups:
+        items = list(group)
+
+        # Split items into chunks of 3
+        chunks = [items[i:i + 3] for i in range(0, len(items), 3)]
+
+        for chunk in chunks:
+            # Prepare the payload
+            payload = [
+                {
+                    "mssv": item['mssv'],
+                    "face_feature": str(item['face_feature'])  # convert the face_feature array to a string
+                }
+                for item in chunk
+            ]
+
+            # Send the payload and wait for the request to complete
+            send_request(payload)
 
     print("Feature backup completed")
 

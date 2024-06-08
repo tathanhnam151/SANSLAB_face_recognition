@@ -126,20 +126,7 @@ def add_persons(backup_dir, add_persons_dir, faces_save_dir, features_path):
     images_emb = np.array(images_emb)
     images_name = np.array(images_name)
 
-    # Read existing features if available
-    features = read_features(features_path)
-
-    if features is not None:
-        # Unpack existing features
-        old_images_name, old_images_emb = features
-
-        # Combine new features with existing features
-        images_name = np.hstack((old_images_name, images_name))
-        images_emb = np.vstack((old_images_emb, images_emb))
-
-        print("Updated features!")
-
-    # Save the combined features
+    # Save the new features, overwriting the old ones
     np.savez_compressed(features_path, images_name=images_name, images_emb=images_emb)
 
     # Move the data of the new person to the backup data directory
