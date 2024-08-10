@@ -29,7 +29,7 @@ To get started with the Attendance System, follow these steps:
 
 1. **Clone the repository**:
   ```bash
-    git clone https://github.com/yourusername/attendance-system.git
+    git clone https://github.com/tathanhnam151/SANSLAB_face_recognition
     cd attendance-system
   ```
 
